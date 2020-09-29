@@ -891,7 +891,7 @@ class Camera(ClassWithParameterSet):
         # return the offset point and the direction of the ray
         return offset, direction
 
-    def spaceFromImage(self, points, X=None, Y=None, Z=0, D=None, mesh=None):
+    def spaceFromImage(self, points, X=None, Y=None, Z=0, D=None, mesh=None, hide_backpoints=False):
         """
         Convert points (Nx2) from the **image** coordinate system to the **space** coordinate system. This is not a unique
         transformation, therefore an additional constraint has to be provided. The X, Y, or Z coordinate(s) of the target
@@ -988,7 +988,8 @@ class Camera(ClassWithParameterSet):
             # apply the factor to the direction vector plus the offset
             points = direction * factor[:, None] + offset[None, :]
         # ignore points that are behind the camera (e.g. trying to project points above the horizon to the ground)
-        points[factor < 0] = np.nan
+        if hide_backpoints:
+            points[factor < 0] = np.nan
         return points
 
     def gpsFromSpace(self, points):
